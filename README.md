@@ -3,7 +3,7 @@
 A Model Context Protocol (MCP) server that transforms your Elasticsearch cluster into an AI-powered observability engine.  
 Enables natural language interaction for analyzing logs, APM traces (with waterfall and RCA), and system metrics — delivering deep performance and troubleshooting insights with minimal effort.
 
-## 📊  Demo Examples Elasticsearch MCP Server ai
+## 💡  Demo Examples Elasticsearch MCP Server ai
 
 - **Demo APM Waterfall Trace Performance Analysis**, how to analyze application traces using waterfall visualization for in-depth performance insights. Quickly identify bottlenecks, latency issues, and service dependencies in real APM data.
 ![Demo APM RCA](demo/mcp_server_elasticsearch_apm_waterfall.gif)
@@ -124,24 +124,6 @@ This MCP server converts your Elasticsearch cluster into a powerful tool for AI 
 - **`h`**: Specific columns to display (e.g., `"index,health,status"`)
 - **`s`**: Columns to sort by (e.g., `"index:desc"`)
 
-### 💡 **Query String Examples**
-```bash
-# Temporal search
-"@timestamp:>now-1h"                    # Last hour
-"@timestamp:[now-2h TO now-1h]"         # Between 2h and 1h ago
-
-# Field search
-"service.name:api-users"                # Specific service
-"log.level:ERROR"                       # Log level
-"error.exception.type:ConnectionError"  # Error type
-
-# Combined search
-"service.name:api-users AND @timestamp:>now-1h AND log.level:ERROR"
-
-# Wildcard search
-"message:*timeout*"                     # Message contains timeout
-"service.name:api-*"                    # Services starting with api-
-```
 
 ## 🚀 Installation
 
