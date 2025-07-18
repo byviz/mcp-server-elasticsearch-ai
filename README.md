@@ -395,14 +395,11 @@ Contributions are welcome! Please:
 Need help, have questions, or want to suggest new features?  
 Join our growing community! Open an issue or contact us — we're here to help you get the most out of AI-powered Elasticsearch.
 
-Iván Frías Molina  
+**Iván Frías Molina**  
 Elastic & Byviz
 
-- 📧 ivan.frias@elastic.co  
-- 📧 ivan.frias@byviz.com
+**- 📧 ivan.frias@elastic.co**  
+**- 📧 ivan.frias@byviz.com**
 - [LinkedIn](https://www.linkedin.com/in/ivan-frias-molina-arquitecto-ingeniero-elasticsearch/)
 - [Web](https://www.byviz.ai/)
 
-- **Issues**: GitHub Issues
-- **Documentation**: README.md
-- **Examples**: examples/ directory
