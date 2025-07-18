@@ -1,6 +1,7 @@
 # 🔍 Elasticsearch MCP Server ai
 
-A Model Context Protocol (MCP) server that enables AI assistants to interact with Elasticsearch clusters through natural language, with comprehensive APM and metrics support.
+A Model Context Protocol (MCP) server that transforms your Elasticsearch cluster into an AI-powered observability engine.  
+Enables natural language interaction for analyzing logs, APM traces (with waterfall and RCA), and system metrics — delivering deep performance and troubleshooting insights with minimal effort.
 
 ## 📊  Demo Examples Elasticsearch MCP Server ai
 
