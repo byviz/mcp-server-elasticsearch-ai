@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) server that enables AI assistants to interact with Elasticsearch clusters through natural language, with comprehensive APM and metrics support.
 
+- **Demo APM Waterfall Trace Performance Analysis**, This demo showcases how to analyze application traces using waterfall visualization for in-depth performance insights. Quickly identify bottlenecks, latency issues, and service dependencies in real APM data.
+![Demo APM RCA](demo/mcp_server_elasticsearch_apm_waterfall.gif)
+
+- **Demo RCA APM (Root Cause Analysis)**
 ![Demo APM RCA](demo/mcp-elasticsearch-apm-rca.gif)
 
 ## 🎯 **Core Value: Advanced APM Analysis**
