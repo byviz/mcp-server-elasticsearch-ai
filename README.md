@@ -4,14 +4,14 @@ A Model Context Protocol (MCP) server that enables AI assistants to interact wit
 
 ## 📊  Demo Examples Elasticsearch MCP Server ai
 
-- **Demo APM Waterfall Trace Performance Analysis**, This demo showcases how to analyze application traces using waterfall visualization for in-depth performance insights. Quickly identify bottlenecks, latency issues, and service dependencies in real APM data.
+- **Demo APM Waterfall Trace Performance Analysis**, how to analyze application traces using waterfall visualization for in-depth performance insights. Quickly identify bottlenecks, latency issues, and service dependencies in real APM data.
 ![Demo APM RCA](demo/mcp_server_elasticsearch_apm_waterfall.gif)
 
 - **Demo RCA APM (Root Cause Analysis)**, Demonstrates how to automatically identify the underlying causes of errors and performance issues in APM traces, providing actionable insights for rapid troubleshooting.
 ![Demo APM RCA](demo/mcp-elasticsearch-apm-rca.gif)
 
 - **Demo Perform performance analysis by APM service**, Analyze and compare the performance metrics for each APM service, identifying latency, throughput, and resource bottlenecks across your architecture.
-![Demo APM RCA](demo/mcp_server_elasticsearch_apm_analysis.gif.gif)
+![Demo APM RCA](demo/mcp_server_elasticsearch_apm_analysis.gif)
 
 ## 🎯 **Core Value: Advanced APM Analysis**
 
