@@ -1,1 +1,1 @@
-"""Tests for Datadog MCP Server."""
+# Tests package

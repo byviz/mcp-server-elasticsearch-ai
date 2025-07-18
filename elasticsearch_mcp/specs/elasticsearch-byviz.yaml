@@ -1,0 +1,1146 @@
+openapi: 3.0.3
+info:
+  title: Elasticsearch API
+  description: Elasticsearch REST API for search and data management
+  version: 8.0.0
+  contact:
+    name: Elasticsearch
+    url: https://www.elastic.co
+    email: info@elastic.co
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:9200
+    description: Local Elasticsearch instance
+
+paths:
+  /:
+    get:
+      summary: Get cluster information
+      description: Returns basic information about the Elasticsearch cluster
+      operationId: getClusterInfo
+      responses:
+        '200':
+          description: Cluster information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  cluster_name:
+                    type: string
+                  cluster_uuid:
+                    type: string
+                  version:
+                    type: object
+                    properties:
+                      number:
+                        type: string
+                      build_flavor:
+                        type: string
+                      build_type:
+                        type: string
+                      build_hash:
+                        type: string
+                      build_date:
+                        type: string
+                      build_snapshot:
+                        type: boolean
+                      lucene_version:
+                        type: string
+                  tagline:
+                    type: string
+
+  /_cluster/health:
+    get:
+      summary: Get cluster health
+      description: Returns the health status of the cluster
+      operationId: getClusterHealth
+      parameters:
+        - name: level
+          in: query
+          description: Level of detail for health information
+          schema:
+            type: string
+            enum: [cluster, indices, shards]
+            default: cluster
+        - name: wait_for_status
+          in: query
+          description: Wait for specific status
+          schema:
+            type: string
+            enum: [green, yellow, red]
+        - name: timeout
+          in: query
+          description: Time to wait for response
+          schema:
+            type: string
+            default: 30s
+      responses:
+        '200':
+          description: Cluster health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cluster_name:
+                    type: string
+                  status:
+                    type: string
+                    enum: [green, yellow, red]
+                  timed_out:
+                    type: boolean
+                  number_of_nodes:
+                    type: integer
+                  number_of_data_nodes:
+                    type: integer
+                  active_primary_shards:
+                    type: integer
+                  active_shards:
+                    type: integer
+                  relocating_shards:
+                    type: integer
+                  initializing_shards:
+                    type: integer
+                  unassigned_shards:
+                    type: integer
+
+  /_cat/indices:
+    get:
+      summary: Get indices information
+      description: Returns information about indices in a compact format
+      operationId: getCatIndices
+      parameters:
+        - name: format
+          in: query
+          description: Output format
+          schema:
+            type: string
+            enum: [json, yaml, text]
+            default: text
+        - name: v
+          in: query
+          description: Verbose output with headers
+          schema:
+            type: boolean
+            default: false
+        - name: h
+          in: query
+          description: Comma-separated list of column names to display
+          schema:
+            type: string
+        - name: s
+          in: query
+          description: Comma-separated list of column names to sort by
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Indices information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    health:
+                      type: string
+                    status:
+                      type: string
+                    index:
+                      type: string
+                    uuid:
+                      type: string
+                    pri:
+                      type: string
+                    rep:
+                      type: string
+                    docs.count:
+                      type: string
+                    docs.deleted:
+                      type: string
+                    store.size:
+                      type: string
+                    pri.store.size:
+                      type: string
+
+  /{index}:
+    get:
+      summary: Get index information
+      description: Returns information about a specific index
+      operationId: getIndex
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Index information
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Index not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      reason:
+                        type: string
+
+  /{index}/_search:
+    get:
+      summary: Search documents
+      description: Search for documents in an index
+      operationId: searchDocuments
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Query string
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 10
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: 30s
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  took:
+                    type: integer
+                  timed_out:
+                    type: boolean
+                  _shards:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      successful:
+                        type: integer
+                      skipped:
+                        type: integer
+                      failed:
+                        type: integer
+                  hits:
+                    type: object
+                    properties:
+                      total:
+                        type: object
+                        properties:
+                          value:
+                            type: integer
+                          relation:
+                            type: string
+                      max_score:
+                        type: number
+                        nullable: true
+                      hits:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _index:
+                              type: string
+                            _type:
+                              type: string
+                            _id:
+                              type: string
+                            _score:
+                              type: number
+                              nullable: true
+                            _source:
+                              type: object
+
+
+
+  /{index}/_doc/{id}:
+    get:
+      summary: Get document by ID
+      description: Retrieve a document by its ID
+      operationId: getDocument
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: Document ID
+          schema:
+            type: string
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _index:
+                    type: string
+                  _type:
+                    type: string
+                  _id:
+                    type: string
+                  _version:
+                    type: integer
+                  _seq_no:
+                    type: integer
+                  _primary_term:
+                    type: integer
+                  found:
+                    type: boolean
+                  _source:
+                    type: object
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _index:
+                    type: string
+                  _type:
+                    type: string
+                  _id:
+                    type: string
+                  found:
+                    type: boolean
+
+  /{index}/_mapping:
+    get:
+      summary: Get index mapping
+      description: Returns the mapping definition for an index
+      operationId: getMapping
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Index mapping
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /{index}/_settings:
+    get:
+      summary: Get index settings
+      description: Returns the settings for an index
+      operationId: getSettings
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Index settings
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /_search:
+    get:
+      summary: Search across all indices
+      description: Search for documents across all indices
+      operationId: searchAllIndices
+      parameters:
+        - name: q
+          in: query
+          description: Query string
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 10
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: Comma-separated list of indices to search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  took:
+                    type: integer
+                  timed_out:
+                    type: boolean
+                  _shards:
+                    type: object
+                  hits:
+                    type: object
+
+
+
+  /_count:
+    get:
+      summary: Count documents
+      description: Count the number of documents matching a query
+      operationId: countDocuments
+      parameters:
+        - name: q
+          in: query
+          description: Query string
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: Comma-separated list of indices
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  _shards:
+                    type: object
+
+  /{index}/_count:
+    get:
+      summary: Count documents in index
+      description: Count the number of documents in a specific index
+      operationId: countDocumentsInIndex
+      parameters:
+        - name: index
+          in: path
+          required: true
+          description: Index name
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Query string
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Document count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  _shards:
+                    type: object
+
+  # APM (Application Performance Monitoring) Endpoints
+  /logs-apm.*,traces-apm*,metrics-apm.*/_search:
+    get:
+      summary: Search APM data
+      description: Search for APM traces, transactions, and spans across all APM indices
+      operationId: searchAPMData
+      parameters:
+        - name: q
+          in: query
+          description: Query string for APM data
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 10
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order (e.g., @timestamp:desc)
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: APM search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  took:
+                    type: integer
+                  hits:
+                    type: object
+                    properties:
+                      total:
+                        type: object
+                      hits:
+                        type: array
+                        items:
+                          type: object
+
+  /logs-apm.*,traces-apm*,metrics-apm.*/_count:
+    get:
+      summary: Count APM documents
+      description: Count the number of documents in APM indices (errors, traces, metrics)
+      operationId: countAPMDocuments
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering APM documents
+          schema:
+            type: string
+      responses:
+        '200':
+          description: APM document count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  _shards:
+                    type: object
+
+
+
+  /logs-apm.*/_search:
+    get:
+      summary: Search APM errors
+      description: Search for errors and exceptions in APM data
+      operationId: searchAPMErrors
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering (e.g., '@timestamp:>now-1h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 20
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: APM errors search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+
+
+  /metrics-apm.*/_search:
+    get:
+      summary: Search APM performance metrics
+      description: Search for performance metrics and slow transactions
+      operationId: searchAPMPerformance
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering (e.g., '@timestamp:>now-1h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 10
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: APM performance metrics
+          content:
+            application/json:
+              schema:
+                type: object
+
+
+
+  # Metrics and Monitoring Endpoints
+  /metricbeat-*/_search:
+    get:
+      summary: Search system metrics
+      description: Search for system metrics from Metricbeat
+      operationId: searchSystemMetrics
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering (e.g., '@timestamp:>now-1h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 50
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: System metrics search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+
+
+
+
+  /logs-*/_search:
+    get:
+      summary: Search log data
+      description: Search for log entries from Filebeat and other log sources
+      operationId: searchLogData
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering (e.g., '@timestamp:>now-1h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 50
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: Log search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /filebeat-*/_search:
+    get:
+      summary: Search Filebeat logs
+      description: Search for log entries specifically from Filebeat indices
+      operationId: searchFilebeatLogs
+      parameters:
+        - name: q
+          in: query
+          description: Query string for advanced filtering (e.g., '@timestamp:>now-1h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 50
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: Filebeat log search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Alerting and Anomaly Detection
+  /.watcher-history-*/_search:
+    get:
+      summary: Search Watcher alerts
+      description: Search for Elasticsearch Watcher alert history
+      operationId: searchWatcherAlerts
+      parameters:
+        - name: q
+          in: query
+          description: Query string for filtering (e.g., '@timestamp:>now-24h')
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Number of results to return
+          schema:
+            type: integer
+            default: 20
+        - name: from
+          in: query
+          description: Starting offset
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            default: "@timestamp:desc"
+        - name: _source
+          in: query
+          description: Fields to include in response
+          schema:
+            type: string
+        - name: timeout
+          in: query
+          description: Search timeout
+          schema:
+            type: string
+            default: "30s"
+      responses:
+        '200':
+          description: Watcher alerts search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Optimized APM Analysis Tools
+  /_apm/trace/analyze:
+    get:
+      summary: Analyze trace performance
+      description: Performs comprehensive waterfall analysis of an APM trace with error correlation, metrics correlation, and performance recommendations
+      operationId: analyzeTracePerformance
+      parameters:
+        - name: trace_id
+          in: query
+          required: true
+          description: Trace ID to analyze
+          schema:
+            type: string
+            example: "430dbab7a0e0322274f076569cdc0c3d"
+        - name: include_errors
+          in: query
+          description: Include error correlation analysis
+          schema:
+            type: boolean
+            default: true
+        - name: include_metrics
+          in: query
+          description: Include metrics correlation analysis
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Trace performance analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trace_id:
+                    type: string
+                  analysis:
+                    type: object
+                    properties:
+                      waterfall:
+                        type: array
+                        items:
+                          type: object
+                      performance_metrics:
+                        type: object
+                      error_correlation:
+                        type: object
+                      metrics_correlation:
+                        type: object
+                      recommendations:
+                        type: array
+                        items:
+                          type: string
+
+  /_apm/errors/patterns:
+    get:
+      summary: Find error patterns
+      description: Analyzes error patterns across APM data with aggregation, timeline analysis, and specific recommendations for ConnectionError patterns
+      operationId: findErrorPatterns
+      parameters:
+        - name: time_range
+          in: query
+          description: Time range for error analysis
+          schema:
+            type: string
+            default: "now-24h"
+            example: "now-24h"
+        - name: service_name
+          in: query
+          description: Filter by specific service name
+          schema:
+            type: string
+            example: "servicio-local"
+        - name: error_type
+          in: query
+          description: Filter by specific error type
+          schema:
+            type: string
+            example: "ConnectionError"
+        - name: min_frequency
+          in: query
+          description: Minimum error frequency threshold
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Error pattern analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  analysis:
+                    type: object
+                    properties:
+                      error_summary:
+                        type: object
+                      error_patterns:
+                        type: array
+                        items:
+                          type: object
+                      timeline_analysis:
+                        type: object
+                      recommendations:
+                        type: array
+                        items:
+                          type: string
+
+  /_apm/business/correlate:
+    get:
+      summary: Correlate business events
+      description: Correlates business events with APM data to reconstruct complete user journeys
+      operationId: correlateBusinessEvents
+      parameters:
+        - name: correlation_id
+          in: query
+          required: true
+          description: Correlation ID to search for across indices
+          schema:
+            type: string
+            example: "430dbab7a0e0322274f076569cdc0c3d"
+        - name: time_window
+          in: query
+          description: Time window for correlation analysis
+          schema:
+            type: string
+            default: "30m"
+            example: "30m"
+        - name: include_user_journey
+          in: query
+          description: Include user journey reconstruction
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Business event correlation results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  correlation_id:
+                    type: string
+                  analysis:
+                    type: object
+                    properties:
+                      apm_events:
+                        type: array
+                        items:
+                          type: object
+                      business_events:
+                        type: array
+                        items:
+                          type: object
+                      timeline_reconstruction:
+                        type: object
+                      correlation_analysis:
+                        type: object
+                      recommendations:
+                        type: array
+                        items:
+                          type: string
+
+  # Health and Status Monitoring
+  /_cluster/stats:
+    get:
+      summary: Get cluster statistics
+      description: Returns comprehensive cluster statistics for monitoring
+      operationId: getClusterStats
+      responses:
+        '200':
+          description: Cluster statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cluster_name:
+                    type: string
+                  status:
+                    type: string
+                  indices:
+                    type: object
+                  nodes:
+                    type: object
+
+  /_nodes/stats:
+    get:
+      summary: Get node statistics
+      description: Returns statistics for all nodes in the cluster
+      operationId: getNodeStats
+      parameters:
+        - name: metric
+          in: query
+          description: Specific metrics to retrieve (indices, os, process, jvm, etc.)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Node statistics
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /_nodes/stats/jvm:
+    get:
+      summary: Get node JVM stats
+      description: Returns JVM statistics including thread information for performance monitoring
+      operationId: getHotThreads
+      parameters:
+        - name: metric
+          in: query
+          description: Specific JVM metrics to retrieve
+          schema:
+            type: string
+            default: "jvm"
+      responses:
+        '200':
+          description: Node JVM statistics including thread information
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JVM statistics and thread information
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    apiKey:
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - basicAuth: []
+  - apiKey: []

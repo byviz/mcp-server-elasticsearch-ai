@@ -1,0 +1,21 @@
+# Elasticsearch MCP Server - Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# First install production dependencies
+-r requirements.txt
+
+# Testing Framework
+pytest>=7.0.0
+pytest-asyncio>=1.0.0
+coverage[toml]>=7.0.0
+
+# Code Quality & Linting
+mypy>=1.7.0
+ruff>=0.1.0
+
+# Security Analysis
+safety>=3.0.0
+bandit>=1.7.0
+
+# Build Tools
+build>=1.0.0 

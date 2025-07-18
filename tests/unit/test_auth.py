@@ -1,48 +1,94 @@
-"""Unit tests for Datadog authentication."""
+"""Unit tests for Elasticsearch authentication."""
 
 import pytest
 
-from datadog_mcp.auth import DatadogClient
-from datadog_mcp.config import DatadogConfig
+from elasticsearch_mcp.auth import ElasticsearchClient
+from elasticsearch_mcp.config import ElasticsearchConfig
 
 
-class TestDatadogClient:
-    """Tests for DatadogClient authentication."""
+class TestElasticsearchClient:
+    """Tests for ElasticsearchClient authentication."""
 
     @pytest.fixture
-    def datadog_config(self) -> DatadogConfig:
-        """Create a test Datadog configuration."""
-        return DatadogConfig(
-            base_url="https://api.datadoghq.com",
-            api_key="test-api-key",
-            app_key="test-app-key",
+    def elasticsearch_config(self) -> ElasticsearchConfig:
+        """Create a test Elasticsearch configuration."""
+        return ElasticsearchConfig(
+            base_url="http://localhost:9200",
+            username="test-user",
+            password="test-password",
             timeout=30,
         )
 
-    def test_client_initialization(self, datadog_config: DatadogConfig) -> None:
-        """Test DatadogClient initialization."""
-        client = DatadogClient(datadog_config)
+    def test_client_initialization(self, elasticsearch_config: ElasticsearchConfig) -> None:
+        """Test ElasticsearchClient initialization."""
+        client = ElasticsearchClient(elasticsearch_config)
         
-        assert client.base_url == "https://api.datadoghq.com"
-        assert client.api_key == "test-api-key"
-        assert client.app_key == "test-app-key"
+        assert client.base_url == "http://localhost:9200"
+        assert client.username == "test-user"
+        assert client.password == "test-password"
         assert client.timeout == 30
 
-    def test_get_auth_headers(self, datadog_config: DatadogConfig) -> None:
-        """Test authentication header generation."""
-        client = DatadogClient(datadog_config)
+    def test_get_auth_headers_basic_auth(self, elasticsearch_config: ElasticsearchConfig) -> None:
+        """Test authentication header generation for basic auth."""
+        client = ElasticsearchClient(elasticsearch_config)
         headers = client.get_auth_headers()
         
-        assert headers["DD-API-KEY"] == "test-api-key"
-        assert headers["DD-APPLICATION-KEY"] == "test-app-key"
+        assert "Authorization" in headers
+        assert headers["Authorization"].startswith("Basic ")
         assert headers["Content-Type"] == "application/json"
-        assert headers["User-Agent"] == "datadog-mcp/1.0.0"
+        assert headers["User-Agent"] == "elasticsearch-mcp/1.0.0"
 
-    def test_headers_not_exposed_in_repr(self, datadog_config: DatadogConfig) -> None:
+    def test_get_auth_headers_api_key(self) -> None:
+        """Test authentication header generation for API key."""
+        config = ElasticsearchConfig(
+            base_url="http://localhost:9200",
+            api_key="test-api-key",
+        )
+        client = ElasticsearchClient(config)
+        headers = client.get_auth_headers()
+        
+        assert headers["Authorization"] == "ApiKey test-api-key"
+        assert headers["Content-Type"] == "application/json"
+        assert headers["User-Agent"] == "elasticsearch-mcp/1.0.0"
+
+    def test_get_auth_headers_no_auth(self) -> None:
+        """Test authentication header generation without authentication."""
+        config = ElasticsearchConfig(base_url="http://localhost:9200")
+        client = ElasticsearchClient(config)
+        headers = client.get_auth_headers()
+        
+        assert "Authorization" not in headers
+        assert headers["Content-Type"] == "application/json"
+        assert headers["User-Agent"] == "elasticsearch-mcp/1.0.0"
+
+    def test_get_client_config_default(self, elasticsearch_config: ElasticsearchConfig) -> None:
+        """Test HTTP client configuration with defaults."""
+        client = ElasticsearchClient(elasticsearch_config)
+        config = client.get_client_config()
+        
+        assert config["timeout"] == 30
+        assert config["verify"] is True
+
+    def test_get_client_config_with_certs(self) -> None:
+        """Test HTTP client configuration with certificates."""
+        config = ElasticsearchConfig(
+            base_url="https://localhost:9200",
+            ca_certs="/path/to/ca.crt",
+            client_cert="/path/to/client.crt",
+            client_key="/path/to/client.key",
+            verify_certs=False,
+        )
+        client = ElasticsearchClient(config)
+        client_config = client.get_client_config()
+        
+        assert client_config["verify"] == "/path/to/ca.crt"
+        assert client_config["cert"] == ("/path/to/client.crt", "/path/to/client.key")
+
+    def test_headers_not_exposed_in_repr(self, elasticsearch_config: ElasticsearchConfig) -> None:
         """Test that sensitive data is not exposed in string representation."""
-        client = DatadogClient(datadog_config)
+        client = ElasticsearchClient(elasticsearch_config)
         client_str = str(client)
         
-        # Ensure API keys are not in string representation
-        assert "test-api-key" not in client_str
-        assert "test-app-key" not in client_str
+        # Ensure credentials are not in string representation
+        assert "test-user" not in client_str
+        assert "test-password" not in client_str

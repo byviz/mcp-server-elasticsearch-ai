@@ -1,0 +1,32 @@
+# Elasticsearch MCP Server - Todas las Dependencias
+# Install with: pip install -r requirements-all.txt
+
+# ===== DEPENDENCIAS DE PRODUCCIÓN =====
+# Core MCP Framework
+fastmcp>=2.0.0
+
+# HTTP Client for Elasticsearch API
+httpx>=0.25.0
+
+# Data Validation and Settings
+pydantic>=2.0.0
+
+# YAML Configuration Support
+pyyaml>=6.0.0
+
+# ===== DEPENDENCIAS DE DESARROLLO =====
+# Testing Framework
+pytest>=7.0.0
+pytest-asyncio>=1.0.0
+coverage[toml]>=7.0.0
+
+# Code Quality & Linting
+mypy>=1.7.0
+ruff>=0.1.0
+
+# Security Analysis
+safety>=3.0.0
+bandit>=1.7.0
+
+# Build Tools
+build>=1.0.0 

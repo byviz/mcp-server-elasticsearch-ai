@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "elasticsearch": {
+      "command": "python3",
+      "args": ["-m", "elasticsearch_mcp"],
+      "cwd": "/path/to/elasticsearch-mcp",
+      "env": {
+        "ELASTICSEARCH_URL": "https://your-cluster.es.io:443",
+        "ELASTICSEARCH_USERNAME": "your-username",
+        "ELASTICSEARCH_PASSWORD": "your-password",
+        "MCP_ENABLE_SECURITY_FILTERING": "true"
+      }
+    }
+  }
+} 
