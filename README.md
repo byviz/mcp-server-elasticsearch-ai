@@ -132,7 +132,7 @@ This MCP server converts your Elasticsearch cluster into a powerful tool for AI 
 #### Option 1: Simple Installation (Recommended for users)
 ```bash
 # Clone repository
-git clone https://github.com/your-user/elasticsearch-mcp.git
+git clone https://github.com/byviz/mcp-server-elasticsearch-ai.git
 cd elasticsearch-mcp
 
 # Create virtual environment
@@ -156,7 +156,7 @@ pip install -e .
 #### Option 3: Using pyproject.toml (Advanced)
 ```bash
 # Clone repository
-git clone https://github.com/your-user/elasticsearch-mcp.git
+git clone https://github.com/byviz/elasticsearch-mcp-ai.git
 cd elasticsearch-mcp
 
 # Create virtual environment
@@ -391,6 +391,9 @@ Contributions are welcome! Please:
 5. Open a Pull Request
 
 ## 📞 Support
+
+Need help, have questions, or want to suggest new features?  
+Join our growing community! Open an issue or contact us — we're here to help you get the most out of AI-powered Elasticsearch.
 
 Iván Frías Molina  
 Elastic & Byviz
