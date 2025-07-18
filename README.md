@@ -2,6 +2,8 @@
 
 A Model Context Protocol (MCP) server that enables AI assistants to interact with Elasticsearch clusters through natural language, with comprehensive APM and metrics support.
 
+![Demo APM RCA](demo/mcp-elasticsearch-apm-rca.gif)
+
 ## 🎯 **Core Value: Advanced APM Analysis**
 
 This MCP server transforms your Elasticsearch cluster into a powerful AI-driven APM analysis platform. **The key differentiator** is our **specialized APM analysis tools** that provide automated insights impossible with basic Elasticsearch queries:
